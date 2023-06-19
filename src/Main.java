@@ -1,6 +1,7 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class Main {
     public static void main(String[] args) {
@@ -86,11 +87,75 @@ public class Main {
         sb.append("Каталог vectors создан\n");
         sb.append("Каталог icons создан\n");
         sb.append("Файл Utils.java был создан\n");
-        System.out.println(sb);
+        // System.out.println(sb);
 
         try (FileWriter writer = new FileWriter("C://Users//danil//Games//temp//temp.txt")) {
             writer.write(String.valueOf(sb));
         } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        GameProgress gp1 = new GameProgress(30, 50, 20, 50.2);
+        GameProgress gp2 = new GameProgress(40, 40, 70, 57.4);
+        GameProgress gp3 = new GameProgress(90, 70, 80, 87.7);
+
+        saveGame("C://Users//danil//Games//savegames//save1.dat", gp1);
+        saveGame("C://Users//danil//Games//savegames//save2.dat", gp2);
+        saveGame("C://Users//danil//Games//savegames//save3.dat", gp3);
+        File save1 = new File("C://Users//danil//Games//savegames//save1.dat");
+        File save2 = new File("C://Users//danil//Games//savegames//save2.dat");
+        File save3 = new File("C://Users//danil//Games//savegames//save3.dat");
+        ArrayList<String> savegames = new ArrayList<String>();
+        savegames.add(save1.getPath());
+        savegames.add(save2.getPath());
+        savegames.add(save3.getPath());
+        zipFiles("C://Users//danil//Games//savegames//zip.zip", savegames);
+        if (save1.delete())
+            System.out.println("Файл удален");
+        if (save2.delete())
+            System.out.println("Файл удален");
+        if (save3.delete())
+            System.out.println("Файл удален");
+    }
+    
+    public static void saveGame(String path, GameProgress gp) {
+        try (FileOutputStream fos = new FileOutputStream(path)) {
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(gp);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public static void zipFiles(String path1, ArrayList<String> savegames) {
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(path1)); FileInputStream fis1 = new FileInputStream(savegames.get(0))) {
+            ZipEntry entry = new ZipEntry("save1.dat");
+            zout.putNextEntry(entry);
+            byte[] buffer = new byte[fis1.available()];
+            fis1.read(buffer);
+            zout.write(buffer);
+            zout.closeEntry();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(path1)); FileInputStream fis2 = new FileInputStream(savegames.get(1))) {
+            ZipEntry entry2 = new ZipEntry("save2.dat");
+            zout.putNextEntry(entry2);
+            byte[] buffer = new byte[fis2.available()];
+            fis2.read(buffer);
+            zout.write(buffer);
+            zout.closeEntry();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(path1)); FileInputStream fis3 = new FileInputStream(savegames.get(2))) {
+            ZipEntry entry3 = new ZipEntry("save3.dat");
+            zout.putNextEntry(entry3);
+            byte[] buffer = new byte[fis3.available()];
+            fis3.read(buffer);
+            zout.write(buffer);
+            zout.closeEntry();
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
